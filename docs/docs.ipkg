@@ -1,0 +1,9 @@
+package refined-docs
+version = 0.1.0
+authors = "stefan-hoeck"
+license = "BSD-3"
+
+depends = refined
+
+sourcedir = "src"
+modules = Intro

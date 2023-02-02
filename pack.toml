@@ -1,0 +1,9 @@
+[custom.all.refined]
+type = "local"
+path = "."
+ipkg = "refined.ipkg"
+
+[custom.all.refined-docs]
+type = "local"
+path = "docs"
+ipkg = "docs.ipkg"

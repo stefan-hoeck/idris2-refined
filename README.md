@@ -1,2 +1,1 @@
-# idris2-refined
-Refinement types for Idris2
+# idris2-refined: Refinement types for Idris2
