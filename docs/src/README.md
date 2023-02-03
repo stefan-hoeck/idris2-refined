@@ -34,7 +34,7 @@ hoeck : Alias
 hoeck = "Stefan Hoeck"
 ```
 
-Here's a link to a more [detailed introduction](Intro.md)
+Here's a link to a more [detailed introduction](docs/src/Intro.md)
 
 ## Prerequisites
 
