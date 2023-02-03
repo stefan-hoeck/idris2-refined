@@ -24,14 +24,16 @@ NonEmptyString = Str NonEmpty
 ```
 
 `NonEmpty` is a predicate on lists from module `Data.List`, and
-`Str` is a data type, which converts a predicate on a list
-of characters to a predicate on strings, by applying the
+`Str` is a data type, which turns a predicate on lists
+of characters into a predicate on strings by applying the
 initial predicate to the unpacked string.
 
 Restricting - or *refining* -  the values of an existing
 type is a common thing do to, for instance when taking one of them as the argument
-of an otherwise partial function. Examples are preventing
-division by zero or taking the head of an empty list. As an example,
+of an otherwise partial function. Typical examples are preventing
+division by zero or taking the head of an empty list but also
+sanitizing strings from user input by disallowing certain characters
+or restricting the length of the string. As an example,
 here is a function for computing the mean of a list of
 floating point numbers. The list must be non-empty, otherwise
 we risk a division by zero error:
@@ -70,11 +72,11 @@ strings representing login names (the combinators come from module
 `Data.Refined`):
 
 ```idris
-IsAliasChar : Char -> Bool
-IsAliasChar c = not (isControl c) && c <= '~'
+IsPrintableASCII : Char -> Bool
+IsPrintableASCII c = not (isControl c) && c <= '~'
 
 0 IsAlias : String -> Type
-IsAlias = Str $ Trimmed && Len (`LTE` 50) && All (Holds IsAliasChar)
+IsAlias = Str $ Trimmed && Len (`LTE` 50) && All (Holds IsPrintableASCII)
 ```
 
 The string must only consist of printable ASCII characters, must be
@@ -85,7 +87,7 @@ a primitive predicate but an alias for `RightTrimmed && LeftTrimmed`,
 both of which imply `NonEmpty`:
 
 ```idris
-0 trimmedImpliesNonEmpty : Trimmed cs -> NonEmpty cs
+trimmedImpliesNonEmpty : Trimmed cs -> NonEmpty cs
 trimmedImpliesNonEmpty (And lt rt) = case lt of
   LTCons _ => IsNonEmpty
 ```
@@ -177,7 +179,9 @@ stefan = "Stefan"
 
 Since all of the above is pretty boring to write, the utilities for
 refined primitives can be generated automatically by means of
-elaborator reflection:
+elaborator reflection (we need to put this stuff in its own
+namespace, because there is already a function called `fromString`
+in this modules):
 
 ```idris
 public export
