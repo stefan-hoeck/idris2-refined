@@ -72,9 +72,11 @@ strings representing login names (the combinators come from module
 `Data.Refined`):
 
 ```idris
+public export
 IsPrintableASCII : Char -> Bool
 IsPrintableASCII c = not (isControl c) && c <= '~'
 
+public export
 0 IsAlias : String -> Type
 IsAlias = Str $ Trimmed && Len (`LTE` 50) && All (Holds IsPrintableASCII)
 ```

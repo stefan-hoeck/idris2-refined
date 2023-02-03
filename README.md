@@ -1,1 +1,1 @@
-# idris2-refined: Refinement types for Idris2
+docs/src/README.md
