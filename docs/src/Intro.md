@@ -7,6 +7,7 @@ assumed to hold for all values of the refinement type.
 module Intro
 
 import Data.Refined
+import Derive.Prelude
 import Derive.Refined
 
 %default total
@@ -79,7 +80,15 @@ IsAlias = Str $ Trimmed && Len (`LTE` 50) && All (Holds IsAliasChar)
 The string must only consist of printable ASCII characters, must be
 at most 50 characters long, and must not start or end with a space
 character. Feel free to have a look at `Data.Refined` to find out,
-how these predicates are defined.
+how these predicates are defined. For instance, `Trimmed` is not
+a primitive predicate but an alias for `RightTrimmed && LeftTrimmed`,
+both of which imply `NonEmpty`:
+
+```idris
+0 trimmedImpliesNonEmpty : Trimmed cs -> NonEmpty cs
+trimmedImpliesNonEmpty (And lt rt) = case lt of
+  LTCons _ => IsNonEmpty
+```
 
 Manually verifying that this predicate holds is tedious, so there are
 two interfaces for helping us with this: `Decidable.HDec.HDec0`,
@@ -165,6 +174,31 @@ fromString s = fromJust $ refineAlias s
 stefan : Alias
 stefan = "Stefan"
 ```
+
+Since all of the above is pretty boring to write, the utilities for
+refined primitives can be generated automatically by means of
+elaborator reflection:
+
+```idris
+public export
+record AutoAlias where
+  constructor MkAutoAlias
+  value : String
+  {auto 0 prf : IsAlias value}
+
+namespace AutoAlias
+  %runElab derive "AutoAlias" [Show, Eq, RefinedString]
+
+hoeck : AutoAlias
+hoeck = "Stefan Hoeck"
+```
+
+## Conclusion
+
+In Idris, working with refinement types should be pretty straight
+forward, and the goal of this library is to provide the necessary
+utilities for defining precise predicates and verifying that those
+predicates hold.
 
 <!-- vi: filetype=idris2
 -->
