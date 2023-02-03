@@ -14,12 +14,15 @@ public export
 interface HDec0 (0 a : Type) (0 p : a -> Type) | p where
   hdec0 : (v : a) -> Maybe0 (p v)
 
+public export
+hdec0All : HDec0 a p => (vs : List a) -> Maybe0 (All p vs)
+hdec0All (x :: xs) = case hdec0 {p} x of
+  Just0 v  => map (v::) $ hdec0All xs
+  Nothing0 => Nothing0
+hdec0All [] = Just0 []
+
 public export %inline
-HDec0 a p => HDec0 (List a) (All p) where
-  hdec0 []        = Just0 []
-  hdec0 (x :: xs) = case hdec0 {p} x of
-    Just0 v  => map (v::) $ hdec0 {p = All p} xs
-    Nothing0 => Nothing0
+HDec0 a p => HDec0 (List a) (All p) where hdec0 = hdec0All
 
 --------------------------------------------------------------------------------
 --          HDec
@@ -29,3 +32,13 @@ HDec0 a p => HDec0 (List a) (All p) where
 public export
 interface HDec (0 a : Type) (0 p : a -> Type) | p where
   hdec : (v : a) -> Maybe (p v)
+
+public export
+hdecAll : HDec a p => (vs : List a) -> Maybe (All p vs)
+hdecAll (x :: xs) = case hdec {p} x of
+  Just v  => map (v::) $ hdecAll xs
+  Nothing => Nothing
+hdecAll [] = Just []
+
+public export %inline
+HDec a p => HDec (List a) (All p) where hdec = hdecAll
