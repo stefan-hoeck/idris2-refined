@@ -7,3 +7,4 @@ depends = refined
 
 sourcedir = "src"
 modules = Intro
+        , README
