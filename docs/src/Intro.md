@@ -6,7 +6,7 @@ assumed to hold for all values of the refinement type.
 ```idris
 module Intro
 
-import Data.Refined
+import Data.DPair
 import Derive.Prelude
 import Derive.Refined
 
@@ -206,5 +206,5 @@ forward, and the goal of this library is to provide the necessary
 utilities for defining precise predicates and verifying that those
 predicates hold.
 
-<!-- vi: filetype=idris2
+<!-- vi: filetype=idris2:syntax=markdown
 -->
