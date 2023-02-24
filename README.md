@@ -43,5 +43,5 @@ It is therefore recommended to use a package manager such as
 [pack](https://github.com/stefan-hoeck/idris2-pack) for taking care
 of your Idris dependencies.
 
-<!-- vi: filetype=idris2
+<!-- vi: filetype=idris2:syntax=markdown
 -->

@@ -13,7 +13,8 @@
 ||| quantity.
 module Derive.Refined
 
-import public Language.Reflection.Derive
+import public Data.Refined
+import Language.Reflection.Util
 
 %default total
 
@@ -60,7 +61,7 @@ proofInfo _            = Nothing
 ||| predicate on the value.
 public export
 data RefinedArgs : (args : Vect m (ConArg n)) -> Type where
-  RArgs : 
+  RArgs :
        {0 nm    : Name}
     -> {0 t1,t2 : PArg n}
     -> {0 mn    : Maybe Name}
@@ -69,8 +70,8 @@ data RefinedArgs : (args : Vect m (ConArg n)) -> Type where
     -> ProofInfo pi
     -> AppVar t2 nm
     -> RefinedArgs [CArg (Just nm) MW ExplicitArg t1 , CArg mn c pi t2]
-  
-  RImplicit : 
+
+  RImplicit :
        {0 as : _}
     -> {0 t  : TTImp}
     -> {0 ix : Fin n}
@@ -132,10 +133,10 @@ valType ns (_ :: as)         (RImplicit x) = valType ns as x
 ||| proof search will do this for us automatically.
 export
 appCon : TTImp -> (c : ParamCon n) -> RefinedArgs c.args -> TTImp
-appCon t (MkParamCon cn _ as) x = fromArgs (var cn .$ t) as x
+appCon t (MkParamCon cn _ as) x = fromArgs (var cn `app` t) as x
   where
     fromArgs : TTImp -> (as : Vect k (ConArg n)) -> RefinedArgs as -> TTImp
-    fromArgs s [_, CArg mn c ExplicitArg _]  (RArgs x y)  = s .$ `(%search)
+    fromArgs s [_, CArg mn c ExplicitArg _]  (RArgs x y)  = s `app` `(%search)
     fromArgs s [_, CArg mn c _ _]            (RArgs x y)  = s
     fromArgs s (ParamArg _ _ :: as)          (RImplicit x) = fromArgs s as x
 
@@ -145,7 +146,7 @@ appCon t (MkParamCon cn _ as) x = fromArgs (var cn .$ t) as x
 ||| auto-implicit predicate on the value.
 public export
 data RefinedInfo : ParamTypeInfo -> Type where
-  RI : 
+  RI :
        {0 c : ParamCon n}
     -> RefinedArgs c.args
     -> RefinedInfo (MkParamTypeInfo ti p ns [c] s)
@@ -172,14 +173,14 @@ refineDef : (fun : Name) -> (p : ParamTypeInfo) -> RefinedInfo p -> Decl
 refineDef fun (MkParamTypeInfo ti p ns [c] s) (RI x) =
   let prf  := proofType ns c.args x
       v    := varStr "v"
-      lhs  := var fun .$ v
+      lhs  := var fun `app` v
       rhs0 := `(case hdec0 {p = ~(proofType ns c.args x)} ~(v) of
                      Just0 _   => Just $ ~(appCon v c x)
                      Nothing0  => Nothing)
       rhs  := `(case hdec {p = ~(proofType ns c.args x)} ~(v) of
                      Just _   => Just $ ~(appCon v c x)
                      Nothing  => Nothing)
-   in def fun [lhs .= if isErased c.args x then rhs0 else rhs]
+   in def fun [patClause lhs (if isErased c.args x then rhs0 else rhs)]
 
 export
 refineTL : (fun : Name) -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
@@ -193,7 +194,7 @@ fromIntTL r p _ =
       fun  := the Name "fromInteger"
       pi   := `((n : Integer) -> {auto 0 _ : IsJust (~(vr) $ fromInteger n)} -> ~(arg))
       tpe  := piAll pi (allImplicits p "Num")
-      df   := def fun [ var fun .$ `(n) .= `(fromJust $ ~(vr) (fromInteger n)) ]
+      df   := def fun [ patClause `(~(var fun) n) `(fromJust $ ~(vr) (fromInteger n)) ]
    in TL (public' fun tpe) df
 
 export
@@ -204,7 +205,7 @@ fromDblTL r p _ =
       fun  := the Name "fromDouble"
       pi   := `((n : Double) -> {auto 0 _ : IsJust (~(vr) $ fromDouble n)} -> ~(arg))
       tpe  := piAll pi (allImplicits p "FromDouble")
-      df   := def fun [ var fun .$ `(n) .= `(fromJust $ ~(vr) (fromDouble n)) ]
+      df   := def fun [ patClause `(~(var fun) n) `(fromJust $ ~(vr) (fromDouble n)) ]
    in TL (public' fun tpe) df
 
 export
@@ -215,7 +216,7 @@ fromStrTL r p _ =
       fun  := the Name "fromString"
       pi   := `((n : String) -> {auto 0 _ : IsJust (~(vr) $ fromString n)} -> ~(arg))
       tpe  := piAll pi (allImplicits p "FromString")
-      df   := def fun [ var fun .$ `(n) .= `(fromJust $ ~(vr) (fromString n)) ]
+      df   := def fun [ patClause `(~(var fun) n) `(fromJust $ ~(vr) (fromString n)) ]
    in TL (public' fun tpe) df
 
 --------------------------------------------------------------------------------
