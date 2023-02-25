@@ -27,18 +27,49 @@ import Language.Reflection.Util
 ||| of type `p nm` for some predicate `p`.
 public export
 data AppVar : (arg : PArg n) -> (nm : Name) -> Type where
-  IsAppVar :
+  HereApp :
        {0 n1, n2   : Name}
     -> {0 p        : PArg n}
     -> (0 prf : (n1 == n2) === True)
     -> AppVar (PApp p (PVar n2)) n1
 
+  HereNamedApp :
+       {0 n1, n2, n3 : Name}
+    -> {0 p          : PArg n}
+    -> (0 prf : (n1 == n2) === True)
+    -> AppVar (PNamedApp p n3 (PVar n2)) n1
+
+  ThereApp :
+       {0 n1    : Name}
+    -> {0 p, p2 : PArg n}
+    -> AppVar p n1
+    -> AppVar (PApp p p2) n1
+
+  ThereNamedApp :
+       {0 n1,n2 : Name}
+    -> {0 p, p2 : PArg n}
+    -> AppVar p n1
+    -> AppVar (PNamedApp p n2 p2) n1
+
 ||| Tests if `arg` is a dependent type on a value with name `nm`.
 public export
 appVar : (nm : Name) -> (arg : PArg n) -> Maybe (AppVar arg nm)
 appVar nm (PApp p (PVar n2)) with (nm == n2) proof eq
-  _ | True  = Just (IsAppVar eq)
-  _ | False = Nothing
+  _ | True  = Just (HereApp eq)
+  _ | False = case appVar nm p of
+    Just prf => Just (ThereApp prf)
+    Nothing  => Nothing
+appVar nm (PApp p q) = case appVar nm p of
+    Just prf => Just (ThereApp prf)
+    Nothing  => Nothing
+appVar nm (PNamedApp p _ (PVar n2)) with (nm == n2) proof eq
+  _ | True  = Just (HereNamedApp eq)
+  _ | False = case appVar nm p of
+    Just prf => Just (ThereNamedApp prf)
+    Nothing  => Nothing
+appVar nm (PNamedApp p _ q) = case appVar nm p of
+    Just prf => Just (ThereNamedApp prf)
+    Nothing  => Nothing
 appVar n1 _                          = Nothing
 
 ||| A proof (value of a predicate) in a refined type must be
@@ -48,7 +79,7 @@ data ProofInfo : PiInfo TTImp -> Type where
   PIAuto     : ProofInfo AutoImplicit
   PIExplicit : ProofInfo ExplicitArg
 
-||| Tests if `pi` explicit or auto-implicit
+||| Tests if `pi` is explicit or auto-implicit
 public export
 proofInfo : (pi : PiInfo TTImp) -> Maybe (ProofInfo pi)
 proofInfo ExplicitArg  = Just PIExplicit
@@ -99,10 +130,13 @@ proofType :
   -> RefinedArgs as
   -> TTImp
 proofType ns (_ :: as) (RImplicit x)        = proofType ns as x
-proofType ns [_, CArg _ _ _ t2] (RArgs x y) = fromApp t2 y
+proofType ns [_, CArg _ _ _ t2] (RArgs x y) = `(\x => ~(fromApp t2 y))
   where
     fromApp : (t : PArg n) -> AppVar t nm -> TTImp
-    fromApp (PApp p _) (IsAppVar _) = ttimp ns p
+    fromApp (PApp p _)         (HereApp _)       = `(~(ttimp ns p) x)
+    fromApp (PApp p t)         (ThereApp q)      = app (fromApp p q) (ttimp ns t)
+    fromApp (PNamedApp p nm _) (HereNamedApp _)  = namedApp (ttimp ns p) nm (varStr "x")
+    fromApp (PNamedApp p nm t) (ThereNamedApp q) = namedApp (fromApp p q) nm (ttimp ns t)
 
 ||| Extracts the predicate from the constructor of a refined type.
 export
@@ -136,8 +170,8 @@ appCon : TTImp -> (c : ParamCon n) -> RefinedArgs c.args -> TTImp
 appCon t (MkParamCon cn _ as) x = fromArgs (var cn `app` t) as x
   where
     fromArgs : TTImp -> (as : Vect k (ConArg n)) -> RefinedArgs as -> TTImp
-    fromArgs s [_, CArg mn c ExplicitArg _]  (RArgs x y)  = s `app` `(%search)
-    fromArgs s [_, CArg mn c _ _]            (RArgs x y)  = s
+    fromArgs s [_, CArg mn c ExplicitArg _]  (RArgs x y)  = `(~(s) prf)
+    fromArgs s [_, CArg mn c _ _]            (RArgs x y)  = `(~(s) @{prf})
     fromArgs s (ParamArg _ _ :: as)          (RImplicit x) = fromArgs s as x
 
 ||| Proof that a data type is a refinement type: A data type with a single
@@ -175,10 +209,10 @@ refineDef fun (MkParamTypeInfo ti p ns [c] s) (RI x) =
       v    := varStr "v"
       lhs  := var fun `app` v
       rhs0 := `(case hdec0 {p = ~(proofType ns c.args x)} ~(v) of
-                     Just0 _   => Just $ ~(appCon v c x)
+                     Just0 prf => Just $ ~(appCon v c x)
                      Nothing0  => Nothing)
       rhs  := `(case hdec {p = ~(proofType ns c.args x)} ~(v) of
-                     Just _   => Just $ ~(appCon v c x)
+                     Just prf  => Just $ ~(appCon v c x)
                      Nothing  => Nothing)
    in def fun [patClause lhs (if isErased c.args x then rhs0 else rhs)]
 
@@ -237,7 +271,7 @@ RefinedInteger nms p = map decls $ refinedInfo p
   where
     decls : RefinedInfo p -> List TopLevel
     decls x =
-      let fun := refineName p
+      let fun := refineName p.getName
        in [ refineTL fun p x, fromIntTL fun p x ]
 
 export %inline

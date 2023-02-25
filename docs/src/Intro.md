@@ -6,7 +6,11 @@ assumed to hold for all values of the refinement type.
 ```idris
 module Intro
 
+import Language.Reflection.Pretty
+import Language.Reflection.Util
 import Data.DPair
+import Decidable.HDec.Int8
+import Decidable.HDec.Bits32
 import Derive.Prelude
 import Derive.Refined
 
@@ -197,6 +201,41 @@ namespace AutoAlias
 
 hoeck : AutoAlias
 hoeck = "Stefan Hoeck"
+```
+
+## Refined Integers
+
+Another use case that often comes up is the refinement of numeric types,
+because only a subset of values might be acceptable as input for a
+given function. For the integral primitives, there are predefined relations
+(and hence, if they are being partially applied, predicates) in
+the [idris2-algebra library](https://github.com/stefan-hoeck/idris2-algebra),
+which come with associated laws.
+
+Here is an example:
+
+```idris
+public export
+record Percent where
+  constructor MkPercent
+  value : Bits32
+  {auto 0 valid : value <= 100}
+
+namespace Percent
+  %runElab derive "Percent" [Show, Eq, Ord, RefinedInteger]
+```
+
+Here is another example for atom charges in a molecule:
+
+```idris
+public export
+record Charge where
+  constructor MkCharge
+  value : Int8
+  {auto 0 valid : FromTo (-8) 8 value}
+
+namespace Charge
+  %runElab derive "Charge" [Show, Eq, Ord, RefinedInteger]
 ```
 
 ## Conclusion
