@@ -2,13 +2,23 @@ package refined
 version = 0.1.0
 authors = "stefan-hoeck"
 license = "BSD-3"
-brief = "Refinement types in Idris2"
+brief   = "Refinement types in Idris2"
 
 depends = elab-util
+        , algebra
 
 sourcedir = "src"
-modules = Data.Maybe0
-        , Data.Refined
+modules = Data.Refined
+
         , Decidable.HDec
+        , Decidable.HDec.Bits8
+        , Decidable.HDec.Bits16
+        , Decidable.HDec.Bits32
+        , Decidable.HDec.Bits64
+        , Decidable.HDec.Int8
+        , Decidable.HDec.Int16
+        , Decidable.HDec.Int32
+        , Decidable.HDec.Int64
+        , Decidable.HDec.Integer
 
         , Derive.Refined

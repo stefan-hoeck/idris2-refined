@@ -13,3 +13,9 @@ type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-elab-util"
 commit = "latest:main"
 ipkg   = "elab-util.ipkg"
+
+[custom.all.algebra]
+type   = "git"
+url    = "https://github.com/stefan-hoeck/idris2-algebra"
+commit = "latest:main"
+ipkg   = "algebra.ipkg"

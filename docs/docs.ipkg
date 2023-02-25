@@ -3,7 +3,7 @@ version = 0.1.0
 authors = "stefan-hoeck"
 license = "BSD-3"
 
-depends = refined
+depends = refined, elab-pretty
 
 sourcedir = "src"
 modules = Intro
