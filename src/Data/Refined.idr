@@ -142,9 +142,34 @@ public export
 HDec Nat p => HDec Integer (Abs p) where
   hdec v = map IsAbs $ hdec (cast $ abs v)
 
+
+--------------------------------------------------------------------------------
+--          Characters
+--------------------------------------------------------------------------------
+
+public export
+0 Ascii : Char -> Type
+Ascii = Holds (< '\128')
+
+public export
+0 Printable : Char -> Type
+Printable = Holds (not . isControl)
+
+public export
+0 PrintableAscii : Char -> Type
+PrintableAscii = Ascii && Printable
+
 --------------------------------------------------------------------------------
 --          Strings
 --------------------------------------------------------------------------------
+
+public export
+data StrLen : (p : Integer -> Type) -> String -> Type where
+  IsStrLen : {0 p : _} -> {0 s : _} -> p (cast $ prim__strLength s) -> StrLen p n
+
+public export
+HDec0 Integer p => HDec0 String (StrLen p) where
+  hdec0 v = map IsStrLen $ hdec0 (cast $ prim__strLength v)
 
 public export
 data Str : (p : List Char -> Type) -> String -> Type where
