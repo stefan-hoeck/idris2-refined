@@ -158,6 +158,12 @@ valType :
 valType ns [CArg _ _ _ t, _] (RArgs x y)   = ttimp ns t
 valType ns (_ :: as)         (RImplicit x) = valType ns as x
 
+||| Extracts the field name from the constructor of a refined type
+export
+valName : (as : Vect m (ConArg n)) -> RefinedArgs as -> Name
+valName [CArg (Just nm) _ _ t, _] (RArgs x y)   = nm
+valName (_ :: as)                 (RImplicit x) = valName as x
+
 ||| Applies the data constructor of a refinement type to a
 ||| refined value. We assume that a proof of validity of
 ||| the correct count is already in scope.

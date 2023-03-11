@@ -8,6 +8,11 @@ type = "local"
 path = "docs"
 ipkg = "docs.ipkg"
 
+[custom.all.refined-json]
+type = "local"
+path = "json"
+ipkg = "refined-json.ipkg"
+
 [custom.all.elab-util]
 type   = "git"
 url    = "https://github.com/stefan-hoeck/idris2-elab-util"
