@@ -1,0 +1,11 @@
+package refined-json-test
+version = 0.1.0
+authors = "stefan-hoeck"
+license = "BSD-3"
+
+depends = refined-json
+
+sourcedir = "src"
+
+executable = "refined-json-test"
+main       = Main

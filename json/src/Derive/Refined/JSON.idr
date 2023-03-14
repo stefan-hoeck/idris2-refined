@@ -1,9 +1,7 @@
 module Derive.Refined.JSON
 
 import public Derive.Refined
-import public JSON.Simple
-import Derive.FromJSON.Simple
-import Derive.ToJSON.Simple
+import public JSON.Simple.Derive
 import Language.Reflection.Util
 
 %default total
@@ -29,7 +27,7 @@ RefinedToJSON ns p = map decls $ refinedInfo p
           impl := implName p "ToJSON"
        in [ TL (toJsonClaim fun p)
                (refinedToJsonDef fun p ri)
-          , TL (fromJsonImplClaim impl p) (fromJsonImplDef fun impl)
+          , TL (toJsonImplClaim impl p) (toJsonImplDef fun impl)
             ]
 
 --------------------------------------------------------------------------------
@@ -64,3 +62,13 @@ RefinedFromJSON ns p = map decls $ refinedInfo p
                (refinedFromJsonDef fun p.getName refn)
           , TL (fromJsonImplClaim impl p) (fromJsonImplDef fun impl)
             ]
+
+--------------------------------------------------------------------------------
+--          JSON
+--------------------------------------------------------------------------------
+
+||| Generate declarations and implementations for
+||| `FromJSON` and `ToJSON` for a given refinement type.
+export %inline
+RefinedJSON : List Name -> ParamTypeInfo -> Res (List TopLevel)
+RefinedJSON ns p = sequenceJoin [RefinedToJSON ns p, RefinedFromJSON ns p]

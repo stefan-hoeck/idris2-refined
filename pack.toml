@@ -12,6 +12,12 @@ ipkg = "docs.ipkg"
 type = "local"
 path = "json"
 ipkg = "refined-json.ipkg"
+test = "test/test.ipkg"
+
+[custom.all.refined-json-test]
+type = "local"
+path = "json/test"
+ipkg = "test.ipkg"
 
 [custom.all.elab-util]
 type   = "git"
