@@ -39,7 +39,7 @@ refineFromJSON : FromJSON a => String -> (a -> Maybe b) -> Parser JSON b
 refineFromJSON str f v = case fromJSON v of
   Right va => case f va of
     Just vb => Right vb
-    Nothing => fail "parsing \{str} failed"
+    Nothing => fail "refining \{str} failed: \{show v}"
   Left s   => prependContext str $ Left s
 
 export
