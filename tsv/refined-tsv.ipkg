@@ -1,0 +1,11 @@
+package refined-tsv
+version = 0.1.0
+authors = "stefan-hoeck"
+license = "BSD-3"
+brief   = "Deriving TSV marshallers for refinement types"
+
+depends = refined
+        , parser-tsv
+
+sourcedir = "src"
+modules = Derive.Refined.TSV
