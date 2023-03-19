@@ -226,38 +226,44 @@ export
 refineTL : (fun : Name) -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
 refineTL fun p x = TL (refineClaim fun p x) (refineDef fun p x)
 
-export
-fromIntTL : (refine : Name) -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
-fromIntTL r p _ =
-  let arg  := p.applied
-      vr   := var r
-      fun  := the Name "fromInteger"
-      pi   := `((n : Integer) -> {auto 0 _ : IsJust (~(vr) $ fromInteger n)} -> ~(arg))
-      tpe  := piAll pi (allImplicits p "Num")
-      df   := def fun [ patClause `(~(var fun) n) `(fromJust $ ~(vr) (fromInteger n)) ]
-   in TL (public' fun tpe) df
+litTL :
+     (fun,constraint : Name)
+  -> (tpe : TTImp)
+  -> (p : ParamTypeInfo)
+  -> RefinedInfo p
+  -> TopLevel
+litTL fun con tpe (MkParamTypeInfo ti q ns [c] s) (RI x) =
+  let p    := MkParamTypeInfo ti q ns [c] s
+      arg  := p.applied
+      vfun := var fun
+      res  := appCon (var fun `app` varStr "n") c x
+   in case isErased c.args x of
+        False =>
+          let test := `(hdec {p = ~(proofType ns c.args x)} (~(vfun) n))
+              pi   := `((n : ~(tpe)) -> {auto 0 _ : IsJust ~(test)} -> ~(arg))
+              tpe  := piAll pi (allImplicits p con)
+              rhs  := `(let prf := fromJust ~(test) in ~(res))
+              df   := def fun [ patClause `(~(var fun) n) rhs ]
+           in TL (public' fun tpe) df
+        True =>
+          let test := `(hdec0 {p = ~(proofType ns c.args x)} (~(vfun) n))
+              pi   := `((n : ~(tpe)) -> {auto 0 _ : IsJust0 ~(test)} -> ~(arg))
+              tpe  := piAll pi (allImplicits p con)
+              rhs  := `(let 0 prf := fromJust0 ~(test) in ~(res))
+              df   := def fun [ patClause `(~(var fun) n) rhs ]
+           in TL (public' fun tpe) df
 
 export
-fromDblTL : (refine : Name) -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
-fromDblTL r p _ =
-  let arg  := p.applied
-      vr   := var r
-      fun  := the Name "fromDouble"
-      pi   := `((n : Double) -> {auto 0 _ : IsJust (~(vr) $ fromDouble n)} -> ~(arg))
-      tpe  := piAll pi (allImplicits p "FromDouble")
-      df   := def fun [ patClause `(~(var fun) n) `(fromJust $ ~(vr) (fromDouble n)) ]
-   in TL (public' fun tpe) df
+fromIntTL : (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
+fromIntTL = litTL "fromInteger" "Num" `(Integer)
 
 export
-fromStrTL : (refine : Name) -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
-fromStrTL r p _ =
-  let arg  := p.applied
-      vr   := var r
-      fun  := the Name "fromString"
-      pi   := `((n : String) -> {auto 0 _ : IsJust (~(vr) $ fromString n)} -> ~(arg))
-      tpe  := piAll pi (allImplicits p "FromString")
-      df   := def fun [ patClause `(~(var fun) n) `(fromJust $ ~(vr) (fromString n)) ]
-   in TL (public' fun tpe) df
+fromDblTL : (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
+fromDblTL = litTL "fromDouble" "FromDouble" `(Double)
+
+export
+fromStrTL : (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
+fromStrTL = litTL "fromString" "FromString" `(String)
 
 --------------------------------------------------------------------------------
 --          Derive
@@ -278,7 +284,7 @@ RefinedInteger nms p = map decls $ refinedInfo p
     decls : RefinedInfo p -> List TopLevel
     decls x =
       let fun := refineName p.getName
-       in [ refineTL fun p x, fromIntTL fun p x ]
+       in [ refineTL fun p x, fromIntTL p x ]
 
 export %inline
 RefinedDouble : List Name -> ParamTypeInfo -> Res (List TopLevel)
@@ -287,7 +293,7 @@ RefinedDouble nms p = map decls $ refinedInfo p
     decls : RefinedInfo p -> List TopLevel
     decls x =
       let fun := refineName p
-       in [ refineTL fun p x, fromIntTL fun p x, fromDblTL fun p x ]
+       in [ refineTL fun p x, fromIntTL p x, fromDblTL p x ]
 
 export %inline
 RefinedString : List Name -> ParamTypeInfo -> Res (List TopLevel)
@@ -296,4 +302,4 @@ RefinedString nms p = map decls $ refinedInfo p
     decls : RefinedInfo p -> List TopLevel
     decls x =
       let fun := refineName p
-       in [ refineTL fun p x, fromStrTL fun p x ]
+       in [ refineTL fun p x, fromStrTL p x ]
