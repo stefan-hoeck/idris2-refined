@@ -32,3 +32,11 @@ jobs:
         run: pack typecheck refined
       - name: Build docs
         run: pack typecheck refined-docs
+      - name: Build json
+        run: pack typecheck refined-json
+      - name: Test json
+        run: pack test refined-json
+      - name: Build tsv
+        run: pack typecheck refined-tsv
+      - name: Test tsv
+        run: pack test refined-tsv

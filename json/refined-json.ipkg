@@ -2,7 +2,7 @@ package refined-json
 version = 0.1.0
 authors = "stefan-hoeck"
 license = "BSD-3"
-brief   = "Deriving JSON marshallers for refined types"
+brief   = "Deriving JSON marshallers for refinement types"
 
 depends = refined
         , json-simple

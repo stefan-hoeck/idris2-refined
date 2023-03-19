@@ -1,0 +1,11 @@
+package refined-tsv-test
+version = 0.1.0
+authors = "stefan-hoeck"
+license = "BSD-3"
+
+depends = refined-tsv
+
+sourcedir = "src"
+
+executable = "refined-tsv-test"
+main       = Main
