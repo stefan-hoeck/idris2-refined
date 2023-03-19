@@ -238,6 +238,17 @@ namespace Charge
   %runElab derive "Charge" [Show, Eq, Ord, RefinedInteger]
 ```
 
+```idris
+public export
+record Phantom (a : Type) where
+  constructor MkPhantom
+  value : String
+  {auto 0 prf : IsAlias value}
+
+namespace Phantom
+  %runElab derive "Phantom" [Show, Eq, RefinedString]
+```
+
 ## Conclusion
 
 In Idris, working with refinement types should be pretty straight
