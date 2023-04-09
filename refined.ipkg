@@ -11,6 +11,7 @@ sourcedir = "src"
 modules = Data.Refined
 
         , Decidable.HDec
+        , Decidable.HDecEq
         , Decidable.HDec.Bits8
         , Decidable.HDec.Bits16
         , Decidable.HDec.Bits32
