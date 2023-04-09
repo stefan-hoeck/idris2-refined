@@ -4,6 +4,7 @@ import public Data.List
 import public Data.Maybe0
 import public Data.Nat
 import public Decidable.HDec
+import public Decidable.HDecEq
 
 %default total
 
