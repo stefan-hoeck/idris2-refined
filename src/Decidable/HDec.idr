@@ -24,6 +24,16 @@ hdec0All [] = Just0 []
 public export %inline
 HDec0 a p => HDec0 (List a) (All p) where hdec0 = hdec0All
 
+public export
+hdec0Any : HDec0 a p => (vs : List a) -> Maybe0 (Any p vs)
+hdec0Any (x :: xs) = case hdec0 {p} x of
+  Just0 v  => Just0 $ Here v
+  Nothing0 => map There $ hdec0Any xs
+hdec0Any [] = Nothing0
+
+public export %inline
+HDec0 a p => HDec0 (List a) (Any p) where hdec0 = hdec0Any
+
 --------------------------------------------------------------------------------
 --          HDec
 --------------------------------------------------------------------------------
