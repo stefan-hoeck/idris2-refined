@@ -232,3 +232,15 @@ HDec (List Char) RightTrimmed where
 public export
 0 Trimmed : List Char -> Type
 Trimmed = LeftTrimmed && RightTrimmed
+
+--------------------------------------------------------------------------------
+--          Const
+--------------------------------------------------------------------------------
+
+public export
+data Const : (p : e -> Type) -> (v : e) -> t -> Type where
+  C : {0 p : e -> Type} -> p v -> Const p v x
+
+export
+{v : e} -> HDec0 e p => HDec0 t (Const p v) where
+  hdec0 _ = map C $ hdec0 {p} v
