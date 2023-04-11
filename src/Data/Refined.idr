@@ -9,6 +9,25 @@ import public Decidable.HDecEq
 %default total
 
 --------------------------------------------------------------------------------
+--          Always and Never
+--------------------------------------------------------------------------------
+
+||| The predicate that always holds.
+public export
+data Always : a -> Type where
+  Yes : Always a
+
+export
+HDec0 a Always where hdec0 _ = Just0 Yes
+
+||| The predicate that never holds.
+public export
+data Never : a -> Type where
+
+export
+HDec0 a Never where hdec0 _ = Nothing0
+
+--------------------------------------------------------------------------------
 --          Holds
 --------------------------------------------------------------------------------
 
