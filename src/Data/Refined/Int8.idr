@@ -1,8 +1,9 @@
-module Decidable.HDec.Int8
+module Data.Refined.Int8
 
-import Data.Refined
 import public Data.Prim.Int8
-import public Decidable.HDec
+import public Data.Refined.Core
+
+%default total
 
 public export %inline
 {x : Int8} -> HDec0 Int8 (< x) where
@@ -61,3 +62,23 @@ FromTo m n = From m && To n
 public export
 0 Between : Int8 -> Int8 -> Int8 -> Type
 Between m n = GreaterThan m && LessThan n
+
+--------------------------------------------------------------------------------
+--          Widenings
+--------------------------------------------------------------------------------
+
+export
+0 widen :
+     FromTo m n x
+  -> {auto 0 p1 : m2 <= m}
+  -> {auto 0 p2 : n  <= n2}
+  -> FromTo m2 n2 x
+widen (And y z) = And (transitive p1 y) (transitive z p2)
+
+export
+0 widen' :
+     Between m n x
+  -> {auto 0 p1 : m2 <= m}
+  -> {auto 0 p2 : n  <= n2}
+  -> Between m2 n2 x
+widen' (And y z) = And (strictRight p1 y) (strictLeft z p2)

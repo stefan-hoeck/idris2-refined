@@ -1,7 +1,8 @@
 module Main
 
-import Decidable.HDec.Bits32
-import Decidable.HDec.Int8
+import Data.Refined.Bits32
+import Data.Refined.Int8
+import Data.Refined.String
 import Derive.Refined.JSON
 
 %default total
@@ -21,8 +22,12 @@ IsPrintableASCII : Char -> Bool
 IsPrintableASCII c = not (isControl c) && c <= '~'
 
 public export
+MaxLen : Nat
+MaxLen = 50
+
+public export
 0 IsAlias : String -> Type
-IsAlias = Str $ Trimmed && Len (`LTE` 50) && All (Holds IsPrintableASCII)
+IsAlias = Str $ Trimmed && Len (`LTE` MaxLen) && All PrintableAscii
 
 public export
 record Alias where
