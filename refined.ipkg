@@ -9,17 +9,23 @@ depends = elab-util
 
 sourcedir = "src"
 modules = Data.Refined
+        , Data.Refined.Bits16
+        , Data.Refined.Bits32
+        , Data.Refined.Bits64
+        , Data.Refined.Bits8
+        , Data.Refined.Char
+        , Data.Refined.Core
+        , Data.Refined.Holds
+        , Data.Refined.Int16
+        , Data.Refined.Int32
+        , Data.Refined.Int64
+        , Data.Refined.Int8
+        , Data.Refined.Integer
+        , Data.Refined.List
+        , Data.Refined.Nat
+        , Data.Refined.String
 
         , Decidable.HDec
         , Decidable.HDecEq
-        , Decidable.HDec.Bits8
-        , Decidable.HDec.Bits16
-        , Decidable.HDec.Bits32
-        , Decidable.HDec.Bits64
-        , Decidable.HDec.Int8
-        , Decidable.HDec.Int16
-        , Decidable.HDec.Int32
-        , Decidable.HDec.Int64
-        , Decidable.HDec.Integer
 
         , Derive.Refined

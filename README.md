@@ -8,6 +8,8 @@ refined primitives. Here is a motivating example:
 module README
 
 import Data.Refined
+import Data.Refined.String
+import Data.Refined.Integer
 import Derive.Prelude
 import Derive.Refined
 
@@ -15,12 +17,12 @@ import Derive.Refined
 %language ElabReflection
 
 public export
-IsPrintableASCII : Char -> Bool
-IsPrintableASCII c = not (isControl c) && c <= '~'
+MaxLen : Nat
+MaxLen = 50
 
 public export
 0 IsAlias : String -> Type
-IsAlias = Str $ Trimmed && Len (`LTE` 50) && All (Holds IsPrintableASCII)
+IsAlias = Str $ Trimmed && Len (`LTE` MaxLen) && All PrintableAscii
 
 public export
 record Alias where

@@ -8,11 +8,11 @@ module Intro
 
 import Language.Reflection.Pretty
 import Language.Reflection.Util
-import Data.DPair
-import Decidable.HDec.Int8
-import Decidable.HDec.Bits32
 import Derive.Prelude
 import Derive.Refined
+import Data.Refined.Bits32
+import Data.Refined.Int8
+import Data.Refined.String
 
 %default total
 %language ElabReflection
@@ -76,13 +76,14 @@ strings representing login names (the combinators come from module
 `Data.Refined`):
 
 ```idris
+
 public export
-IsPrintableASCII : Char -> Bool
-IsPrintableASCII c = not (isControl c) && c <= '~'
+MaxLen : Nat
+MaxLen = 50
 
 public export
 0 IsAlias : String -> Type
-IsAlias = Str $ Trimmed && Len (`LTE` 50) && All (Holds IsPrintableASCII)
+IsAlias = Str $ Trimmed && Len (`LTE` MaxLen) && All PrintableAscii
 ```
 
 The string must only consist of printable ASCII characters, must be
@@ -124,21 +125,6 @@ main : IO ()
 main = runtimePrintAlias "Stefan"
 ```
 
-Unfortunately, the following does not work, even though the string
-is known at compile time:
-
-
-```idris
-failing
-  compileTimePrint : IO ()
-  compileTimePrint = printAlias "Stefan"
-```
-
-The proof of validity Idris has to come up with in this case is just
-too complex, so proof search aborts before finding a solution.
-We will see in the next section, how this can be made more convenient
-to use.
-
 ## Pairing Values with Proofs
 
 So far, we have just refined the *arguments* of functions. However, we often
@@ -149,9 +135,7 @@ return a dependent pair (for unerased proofs) or a `Data.DPair.Subset`
 
 ```idris
 alias : String -> Maybe (Subset String IsAlias)
-alias s = case hdec0 {p = IsAlias} s of
-  Just0 v  => Just $ Element s v
-  Nothing0 => Nothing
+alias = refine0
 ```
 
 However, most refinement types have also distinct semantics, in which

@@ -29,3 +29,9 @@ test = "test/test.ipkg"
 type = "local"
 path = "tsv/test"
 ipkg = "test.ipkg"
+
+[custom.all.algebra]
+type   = "git"
+url    = "git@github.com:stefan-hoeck/idris2-algebra"
+commit = "latest:main"
+ipkg   = "algebra.ipkg"
