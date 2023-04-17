@@ -41,6 +41,14 @@ data (&&) : (p : a -> Type) -> (q : a -> Type) -> a -> Type where
   And : {0 p,q : a -> Type} -> {0 v : a} -> p v -> q v -> (&&) p q v
 
 public export
+mapFst : {0 p,q,r : _} -> (p x -> r x) -> (p && q) x -> (r && q) x
+mapFst f (And v w) = And (f v) w
+
+public export
+mapSnd : {0 p,q,r : _} -> (q x -> r x) -> (p && q) x -> (p && r) x
+mapSnd f (And v w) = And v (f w)
+
+public export
 HDec0 a p => HDec0 a q => HDec0 a (p && q) where
   hdec0 v = zipWith And (hdec0 v) (hdec0 v)
 
@@ -53,6 +61,16 @@ public export
 data (||) : (p : a -> Type) -> (q : a -> Type) -> a -> Type where
   L : {0 p,q : a -> Type} -> {0 v : a} -> p v -> (||) p q v
   R : {0 p,q : a -> Type} -> {0 v : a} -> q v -> (||) p q v
+
+public export
+mapL : {0 p,q,r : _} -> (p x -> r x) -> (p || q) x -> (r || q) x
+mapL f (L v) = L $ f v
+mapL f (R v) = R v
+
+public export
+mapR : {0 p,q,r : _} -> (q x -> r x) -> (p || q) x -> (p || r) x
+mapR f (L v) = L v
+mapR f (R v) = R $ f v
 
 public export
 HDec0 a p => HDec0 a q => HDec0 a (p || q) where
@@ -86,6 +104,10 @@ public export
 public export
 {f : b -> a} -> HDec a p => HDec b (p `On` f) where
   hdec v = map HoldsOn $ hdec (f v)
+
+public export
+mapOn : {0 p,q : _} -> (p (f x) -> q (f x)) -> On p f x -> On q f x
+mapOn g (HoldsOn y) = HoldsOn $ g y
 
 --------------------------------------------------------------------------------
 --          Holds
