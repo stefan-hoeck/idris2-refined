@@ -161,6 +161,9 @@ export
   -> (v : a)
   -> Holds (\x => f x && g x) v
   -> (Holds f && Holds g) v
+andHolds v (ItHolds prf) =
+  let (x,y) := and' prf
+   in And (ItHolds x) (ItHolds y)
 
 0 or1 : (b === True) -> (b || c) === True
 or1 Refl = Refl
