@@ -2,6 +2,7 @@ module Data.Refined.Core
 
 import public Data.DPair
 import public Data.Maybe0
+import public Data.List
 import public Decidable.HDec
 
 %default total
@@ -90,16 +91,39 @@ deMorgan1 f = And (f . L) (f . R)
 
 ||| `Equals m n` is an alias for `n === m`.
 |||
-||| This is useful when using the `(||)` operator, a disjunction of two
+||| This can be useful when using the `(||)` operator, a disjunction of two
 ||| predicates.
 ||| For example, using `hdec0` you could write:
 |||
 ||| ```idris example
-||| hdec0 {p = (Equals 0 || Equals 15 || Equals 30)} value
+||| hdec0 {p = (Equals 0 || Equals 15)} value
 ||| ```
+|||
+||| Note that you may prefer to use `ElemOf` which has a shorter syntax.
 public export
 0 Equals : a -> a -> Type
 Equals = (===)
+
+--------------------------------------------------------------------------------
+--          List operators
+--------------------------------------------------------------------------------
+
+||| `ElemOf [m, n] o` is an alias for `(Equals m || Equals n) o`.
+|||
+||| For example, using `hdec0` you could write>
+|||
+||| ```idris example
+||| hdec0 {p = ElemOf [0, 15, 30, 40]} value
+||| ```
+public export
+0 ElemOf : (l : List a) -> {auto 0 p : NonEmpty l} -> a -> Type
+ElemOf (x :: []) = Equals x
+ElemOf (x :: xs) = Equals x || elemOf xs
+  where
+    elemOf : List a -> a -> Type
+    elemOf [] = (\_ => Bool) -- This pattern cannot be reached.
+    elemOf (x :: []) = Equals x
+    elemOf (x :: xs) = Equals x || elemOf xs
 
 --------------------------------------------------------------------------------
 --          On
