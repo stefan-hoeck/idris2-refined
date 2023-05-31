@@ -85,6 +85,23 @@ deMorgan1 : {0 p,q : a -> Type} -> Not ((p || q) v) -> (Not . p && Not . q) v
 deMorgan1 f = And (f . L) (f . R)
 
 --------------------------------------------------------------------------------
+--          Non-operators
+--------------------------------------------------------------------------------
+
+||| `Equals m n` is an alias for `n === m`.
+|||
+||| This is useful when using the `(||)` operator, a disjunction of two
+||| predicates.
+||| For example, using `hdec0` you could write:
+|||
+||| ```idris example
+||| hdec0 {p = (Equals 0 || Equals 15 || Equals 30)} value
+||| ```
+public export
+0 Equals : a -> a -> Type
+Equals = (===)
+
+--------------------------------------------------------------------------------
 --          On
 --------------------------------------------------------------------------------
 
