@@ -85,13 +85,13 @@ HDecEq String where
 export
 HDecEq a => HDecEq (Maybe a) where
   hdecEq Nothing Nothing   = Just0 Refl
-  hdecEq (Just x) (Just y) = map (cong Just) (hdecEq x y)
+  hdecEq (Just x) (Just y) = map (\x => cong Just x) (hdecEq x y)
   hdecEq _        _        = Nothing0
 
 export
 HDecEq a => HDecEq b => HDecEq (Either a b) where
-  hdecEq (Left x)  (Left y)  = map (cong Left) (hdecEq x y)
-  hdecEq (Right x) (Right y) = map (cong Right) (hdecEq x y)
+  hdecEq (Left x)  (Left y)  = map (\x => cong Left x) (hdecEq x y)
+  hdecEq (Right x) (Right y) = map (\x => cong Right x) (hdecEq x y)
   hdecEq _        _          = Nothing0
 
 export
@@ -139,6 +139,6 @@ export
 
 export
 (p : All (HDecEq . f) ks) => HDecEq (Any f ks) where
-  hdecEq {p = _ :: _} (Here x)  (Here y)  = map (cong Here) $ hdecEq x y
-  hdecEq {p = _ :: _} (There x) (There y) = map (cong There) $ hdecEq x y
+  hdecEq {p = _ :: _} (Here x)  (Here y)  = map (\x => cong Here x) $ hdecEq x y
+  hdecEq {p = _ :: _} (There x) (There y) = map (\x => cong There x) $ hdecEq x y
   hdecEq _ _ = Nothing0
