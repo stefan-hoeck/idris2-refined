@@ -131,6 +131,7 @@ proofType :
   -> TTImp
 proofType ns (_ :: as) (RImplicit x)        = proofType ns as x
 proofType ns [_, CArg _ _ _ t2] (RArgs x y) = `(\x => ~(fromApp t2 y))
+
   where
     fromApp : (t : PArg n) -> AppVar t nm -> TTImp
     fromApp (PApp p _)         (HereApp _)       = `(~(ttimp ns p) x)
@@ -174,6 +175,7 @@ valName (_ :: as)                 (RImplicit x) = valName as x
 export
 appCon : TTImp -> (c : ParamCon n) -> RefinedArgs c.args -> TTImp
 appCon t (MkParamCon cn _ as) x = fromArgs (var cn `app` t) as x
+
   where
     fromArgs : TTImp -> (as : Vect k (ConArg n)) -> RefinedArgs as -> TTImp
     fromArgs s [_, CArg mn c ExplicitArg _]  (RArgs x y)  = `(~(s) prf)

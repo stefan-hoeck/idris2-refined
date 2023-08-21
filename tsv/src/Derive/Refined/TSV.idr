@@ -20,6 +20,7 @@ refinedEncDef fun (MkParamTypeInfo _ _ _ [c] _) (RI x) =
 export
 RefinedTSVEncoderVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
 RefinedTSVEncoderVis vis ns p = map decls $ refinedInfo p
+
   where
     decls : RefinedInfo p -> List TopLevel
     decls ri =
@@ -47,8 +48,13 @@ refinedDecDef fun rn =
 ||| Generate declarations and implementations for
 ||| `TSVDecoder` for a given refinement type.
 export
-RefinedTSVDecoderVis : Visibility -> List Name -> ParamTypeInfo -> Res (List TopLevel)
+RefinedTSVDecoderVis :
+     Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
 RefinedTSVDecoderVis vis ns p = map decls $ refinedInfo p
+
   where
     decls : RefinedInfo p -> List TopLevel
     decls _ =

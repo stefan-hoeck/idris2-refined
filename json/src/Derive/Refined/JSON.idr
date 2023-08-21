@@ -20,6 +20,7 @@ refinedToJsonDef fun (MkParamTypeInfo _ _ _ [c] _) (RI x) =
 export %inline
 RefinedToJSON : List Name -> ParamTypeInfo -> Res (List TopLevel)
 RefinedToJSON ns p = map decls $ refinedInfo p
+
   where
     decls : RefinedInfo p -> List TopLevel
     decls ri =
@@ -52,6 +53,7 @@ refinedFromJsonDef fun tn rn =
 export %inline
 RefinedFromJSON : List Name -> ParamTypeInfo -> Res (List TopLevel)
 RefinedFromJSON ns p = map decls $ refinedInfo p
+
   where
     decls : RefinedInfo p -> List TopLevel
     decls _ =

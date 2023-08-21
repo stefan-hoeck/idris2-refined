@@ -15,7 +15,6 @@ modules = Data.Refined
         , Data.Refined.Bits8
         , Data.Refined.Char
         , Data.Refined.Core
-        , Data.Refined.Holds
         , Data.Refined.Int16
         , Data.Refined.Int32
         , Data.Refined.Int64
