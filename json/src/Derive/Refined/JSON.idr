@@ -17,19 +17,27 @@ refinedToJsonDef fun (MkParamTypeInfo _ _ _ [c] _) (RI x) =
 
 ||| Generate declarations and implementations for
 ||| `FromJSON` for a given refinement type.
-export %inline
-RefinedToJSON : List Name -> ParamTypeInfo -> Res (List TopLevel)
-RefinedToJSON ns p = map decls $ refinedInfo p
+export
+RefinedToJSONVis :
+     Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
+RefinedToJSONVis vis ns p = map decls $ refinedInfo p
 
   where
     decls : RefinedInfo p -> List TopLevel
     decls ri =
       let fun  := funName p "toJson"
           impl := implName p "ToJSON"
-       in [ TL (toJsonClaim fun p)
+       in [ TL (toJsonClaim vis fun p)
                (refinedToJsonDef fun p ri)
-          , TL (toJsonImplClaim impl p) (toJsonImplDef fun impl)
+          , TL (toJsonImplClaim vis impl p) (toJsonImplDef fun impl)
             ]
+
+export %inline
+RefinedToJSON : List Name -> ParamTypeInfo -> Res (List TopLevel)
+RefinedToJSON = RefinedToJSONVis Export
 
 --------------------------------------------------------------------------------
 --          FromJSON
@@ -50,9 +58,13 @@ refinedFromJsonDef fun tn rn =
 
 ||| Generate declarations and implementations for
 ||| `FromJSON` for a given refinement type.
-export %inline
-RefinedFromJSON : List Name -> ParamTypeInfo -> Res (List TopLevel)
-RefinedFromJSON ns p = map decls $ refinedInfo p
+export
+RefinedFromJSONVis :
+     Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
+RefinedFromJSONVis vis ns p = map decls $ refinedInfo p
 
   where
     decls : RefinedInfo p -> List TopLevel
@@ -60,10 +72,14 @@ RefinedFromJSON ns p = map decls $ refinedInfo p
       let fun  := funName p "fromJson"
           impl := implName p "FromJSON"
           refn := refineName p
-       in [ TL (fromJsonClaim fun p)
+       in [ TL (fromJsonClaim vis fun p)
                (refinedFromJsonDef fun p.getName refn)
-          , TL (fromJsonImplClaim impl p) (fromJsonImplDef fun impl)
+          , TL (fromJsonImplClaim vis impl p) (fromJsonImplDef fun impl)
             ]
+
+export %inline
+RefinedFromJSON : List Name -> ParamTypeInfo -> Res (List TopLevel)
+RefinedFromJSON = RefinedFromJSONVis Export
 
 --------------------------------------------------------------------------------
 --          JSON

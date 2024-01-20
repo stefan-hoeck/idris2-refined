@@ -34,7 +34,7 @@ RefinedTSVEncoderVis vis ns p = map decls $ refinedInfo p
 ||| `FromJSON` for a given refinement type.
 export %inline
 RefinedTSVEncoder : List Name -> ParamTypeInfo -> Res (List TopLevel)
-RefinedTSVEncoder = RefinedTSVEncoderVis Public
+RefinedTSVEncoder = RefinedTSVEncoderVis Export
 
 --------------------------------------------------------------------------------
 --          TSVDecoder
@@ -69,7 +69,7 @@ RefinedTSVDecoderVis vis ns p = map decls $ refinedInfo p
 ||| `TSVDecoder` for a given refinement type.
 export %inline
 RefinedTSVDecoder : List Name -> ParamTypeInfo -> Res (List TopLevel)
-RefinedTSVDecoder = RefinedTSVDecoderVis Public
+RefinedTSVDecoder = RefinedTSVDecoderVis Export
 
 --------------------------------------------------------------------------------
 --          TSV
