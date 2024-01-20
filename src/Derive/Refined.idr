@@ -229,12 +229,13 @@ refineTL : (fun : Name) -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
 refineTL fun p x = TL (refineClaim fun p x) (refineDef fun p x)
 
 litTL :
-     (fun,constraint : Name)
+     Visibility
+  -> (fun,constraint : Name)
   -> (tpe : TTImp)
   -> (p : ParamTypeInfo)
   -> RefinedInfo p
   -> TopLevel
-litTL fun con tpe (MkParamTypeInfo ti q ns [c] s) (RI x) =
+litTL vis fun con tpe (MkParamTypeInfo ti q ns [c] s) (RI x) =
   let p    := MkParamTypeInfo ti q ns [c] s
       arg  := p.applied
       vfun := var fun
@@ -246,26 +247,26 @@ litTL fun con tpe (MkParamTypeInfo ti q ns [c] s) (RI x) =
               tpe  := piAll pi (allImplicits p con)
               rhs  := `(let prf := fromJust ~(test) in ~(res))
               df   := def fun [ patClause `(~(var fun) n) rhs ]
-           in TL (public' fun tpe) df
+           in TL (simpleClaim vis fun tpe) df
         True =>
           let test := `(hdec0 {p = ~(proofType ns c.args x)} (~(vfun) n))
               pi   := `((n : ~(tpe)) -> {auto 0 _ : IsJust0 ~(test)} -> ~(arg))
               tpe  := piAll pi (allImplicits p con)
               rhs  := `(let 0 prf := fromJust0 ~(test) in ~(res))
               df   := def fun [ patClause `(~(var fun) n) rhs ]
-           in TL (public' fun tpe) df
+           in TL (simpleClaim vis fun tpe) df
 
 export
-fromIntTL : (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
-fromIntTL = litTL "fromInteger" "Num" `(Integer)
+fromIntTL : Visibility -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
+fromIntTL vis = litTL vis "fromInteger" "Num" `(Integer)
 
 export
-fromDblTL : (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
-fromDblTL = litTL "fromDouble" "FromDouble" `(Double)
+fromDblTL : Visibility -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
+fromDblTL vis = litTL vis "fromDouble" "FromDouble" `(Double)
 
 export
-fromStrTL : (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
-fromStrTL = litTL "fromString" "FromString" `(String)
+fromStrTL : Visibility -> (p : ParamTypeInfo) -> RefinedInfo p -> TopLevel
+fromStrTL vis = litTL vis "fromString" "FromString" `(String)
 
 --------------------------------------------------------------------------------
 --          Derive
@@ -279,29 +280,53 @@ export %inline
 Refined : List Name -> ParamTypeInfo -> Res (List TopLevel)
 Refined nms p = map (pure . refineTL (refineName p) p) $ refinedInfo p
 
-export %inline
-RefinedInteger : List Name -> ParamTypeInfo -> Res (List TopLevel)
-RefinedInteger nms p = map decls $ refinedInfo p
+export
+RefinedIntegerVis :
+     Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
+RefinedIntegerVis vis nms p = map decls $ refinedInfo p
   where
     decls : RefinedInfo p -> List TopLevel
     decls x =
       let fun := refineName p.getName
-       in [ refineTL fun p x, fromIntTL p x ]
+       in [ refineTL fun p x, fromIntTL vis p x ]
+
+export %inline
+RefinedInteger : List Name -> ParamTypeInfo -> Res (List TopLevel)
+RefinedInteger = RefinedIntegerVis Export
+
+export
+RefinedDoubleVis :
+     Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
+RefinedDoubleVis vis nms p = map decls $ refinedInfo p
+  where
+    decls : RefinedInfo p -> List TopLevel
+    decls x =
+      let fun := refineName p
+       in [ refineTL fun p x, fromIntTL vis p x, fromDblTL vis p x ]
 
 export %inline
 RefinedDouble : List Name -> ParamTypeInfo -> Res (List TopLevel)
-RefinedDouble nms p = map decls $ refinedInfo p
+RefinedDouble = RefinedDoubleVis Export
+
+export
+RefinedStringVis :
+     Visibility
+  -> List Name
+  -> ParamTypeInfo
+  -> Res (List TopLevel)
+RefinedStringVis vis nms p = map decls $ refinedInfo p
   where
     decls : RefinedInfo p -> List TopLevel
     decls x =
       let fun := refineName p
-       in [ refineTL fun p x, fromIntTL p x, fromDblTL p x ]
+       in [ refineTL fun p x, fromStrTL vis p x ]
 
 export %inline
 RefinedString : List Name -> ParamTypeInfo -> Res (List TopLevel)
-RefinedString nms p = map decls $ refinedInfo p
-  where
-    decls : RefinedInfo p -> List TopLevel
-    decls x =
-      let fun := refineName p
-       in [ refineTL fun p x, fromStrTL p x ]
+RefinedString = RefinedStringVis Export
