@@ -12,6 +12,7 @@ import Data.Refined.String
 import Data.Refined.Integer
 import Derive.Prelude
 import Derive.Refined
+import Derive.HDecEq
 
 %default total
 %language ElabReflection
@@ -34,6 +35,17 @@ record Alias where
 
 hoeck : Alias
 hoeck = "Stefan Hoeck"
+
+data Weekday =
+    Monday
+  | Tuesday
+  | Wednesday
+  | Thursday
+  | Friday
+  | Saturday
+  | Sunday
+
+%runElab derive "Weekday" [Show, Eq, Ord, HDecEq]
 ```
 
 Here's a link to a more [detailed introduction](docs/src/Intro.md)
