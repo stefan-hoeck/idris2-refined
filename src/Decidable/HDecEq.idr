@@ -8,6 +8,7 @@ import public Data.Maybe0
 ||| Hemi-decidable equality.
 public export
 interface HDecEq a where
+  constructor MkHDecEq
   hdecEq : (x,y : a) -> Maybe0 (x === y)
 
 export

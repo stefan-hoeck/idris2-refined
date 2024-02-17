@@ -28,3 +28,4 @@ modules = Data.Refined
         , Decidable.HDecEq
 
         , Derive.Refined
+        , Derive.HDecEq
