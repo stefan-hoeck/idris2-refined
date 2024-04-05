@@ -1,5 +1,7 @@
 module Data.Refined.Int16
 
+import Control.Relation.ReflexiveClosure
+import Control.Relation
 import public Data.Prim.Int16
 import public Data.Refined.Core
 

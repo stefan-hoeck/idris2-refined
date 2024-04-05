@@ -1,5 +1,7 @@
 module Data.Refined.Char
 
+import Control.Relation.ReflexiveClosure
+import Control.Relation
 import public Data.Prim.Char
 import public Data.Refined.Core
 

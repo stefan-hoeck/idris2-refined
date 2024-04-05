@@ -1,5 +1,7 @@
 module Data.Refined.Int64
 
+import Control.Relation.ReflexiveClosure
+import Control.Relation
 import public Data.Prim.Int64
 import public Data.Refined.Core
 
