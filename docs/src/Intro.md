@@ -6,6 +6,8 @@ assumed to hold for all values of the refinement type.
 ```idris
 module Intro
 
+import Control.Relation.ReflexiveClosure
+import Control.Relation
 import Language.Reflection.Pretty
 import Language.Reflection.Util
 import Derive.Prelude
