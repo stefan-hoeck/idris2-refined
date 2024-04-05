@@ -1,5 +1,7 @@
 module Data.Refined
 
+import public Control.Relation
+import public Control.Relation.ReflexiveClosure
 import public Data.List
 import public Data.Refined.List
 import public Data.Refined.Nat
