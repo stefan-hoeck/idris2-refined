@@ -1,5 +1,7 @@
 module Main
 
+import Control.Relation.ReflexiveClosure
+import Control.Relation
 import Data.Refined.Bits32
 import Data.Refined.Int8
 import Data.Refined.String
