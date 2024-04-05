@@ -1,5 +1,7 @@
 module Data.Refined.Bits64
 
+import Control.Relation.ReflexiveClosure
+import Control.Relation
 import public Data.Prim.Bits64
 import public Data.Refined.Core
 
