@@ -106,8 +106,8 @@ HDecEq a => HDecEq b => HDecEq (Pair a b) where
 0 eqNatToEqual : (x,y : Nat) -> (x == y) === True -> x === y
 eqNatToEqual 0 0         p = Refl
 eqNatToEqual (S k) (S m) p = cong S $ eqNatToEqual k m p
-eqNatToEqual 0     (S k) p impossible
-eqNatToEqual (S k) 0     p impossible
+eqNatToEqual Z     (S k) p impossible
+eqNatToEqual (S k) Z     p impossible
 
 hdecEqNat : (x,y : Nat) -> Maybe0 (x === y)
 hdecEqNat x y with (x == y) proof eq
