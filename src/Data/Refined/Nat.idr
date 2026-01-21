@@ -9,7 +9,7 @@ public export
 fromLTE : (k,v : Nat) -> {auto 0 prf : (k <= v) === True} -> LTE k v
 fromLTE 0     _     = LTEZero
 fromLTE (S k) (S j) = LTESucc (fromLTE k j)
-fromLTE (S k) 0 impossible
+fromLTE (S k) Z impossible
 
 public export
 {n : Nat} -> HDec0 Nat (LTE n) where
