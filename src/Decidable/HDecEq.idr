@@ -129,6 +129,16 @@ HDecEq a => HDecEq (List a) where
   hdecEq _ _ = Nothing0
 
 export
+HDecEq a => HDecEq (SnocList a) where
+  hdecEq [<] [<] = Just0 Refl
+  hdecEq (i1:<l1) (i2:<l2) = case hdecEq l1 l2 of
+    Just0 r1 => case hdecEq i1 i2 of
+      Just0 r2 => Just0 (cong2 (:<) r2 r1)
+      Nothing0 => Nothing0
+    Nothing0 => Nothing0
+  hdecEq _ _ = Nothing0
+
+export
 (prf : All (HDecEq . f) ks) => HDecEq (All f ks) where
   hdecEq [] [] = Just0 Refl
   hdecEq {prf = _ :: _} (h1 :: t1) (h2 :: t2) = case hdecEq h1 h2 of
