@@ -5,6 +5,7 @@ import public JSON.Simple.Derive
 import Language.Reflection.Util
 
 %default total
+%hide DFA.Res
 
 --------------------------------------------------------------------------------
 --          ToJSON
